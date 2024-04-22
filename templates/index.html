@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Diabetes Prediction App</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+<body>
+    <div class="container">
+        <h1>D- Predict : Predict Diabetes</h1>
+        <form id="diabetes-form">
+            <div class="form-group">
+                <label for="pregnancies">Pregnancies:</label>
+                <input type="number" id="pregnancies" name="pregnancies" required>
+            </div>
+
+            <div class="form-group">
+                <label for="glucose">Glucose (mg/dl):</label>
+                <input type="number" id="glucose" name="glucose" required>
+            </div>
+
+            <div class="form-group">
+                <label for="blood_pressure">Blood Pressure (mm Hg):</label>
+                <input type="number" id="blood_pressure" name="blood_pressure" required>
+            </div>
+
+            <div class="form-group">
+                <label for="skin_thickness">Skin Thickness (mm):</label>
+                <input type="number" id="skin_thickness" name="skin_thickness" required>
+            </div>
+
+            <div class="form-group">
+                <label for="insulin">Insulin (mu U/m):</label>
+                <input type="number" id="insulin" name="insulin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bmi">BMI (kg/m2):</label>
+                <input type="number" id="bmi" name="bmi" step="0.00001" required>
+            </div>
+
+            <div class="form-group">
+                <label for="diabetes_pedigree_function">Diabetes Pedigree Function:</label>
+                <input type="number" id="diabetes_pedigree_function" name="diabetes_pedigree_function" step="0.00001" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age (years):</label>
+                <input type="number" id="age" name="age" required>
+            </div>
+            
+            <div id="result"></div> <!-- Result container -->
+
+            <div class="button-group">
+                <button type="submit">Predict</button>
+                <button type="button" id="clear-button">Clear</button> <!-- Clear button -->
+            </div>        
+            <div id="result-dialog" class="result-dialog">
+                <span id="close-btn" class="close-btn">&times;</span>
+                <div id="result"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+ document.getElementById('diabetes-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerText = `Result: ${data.result}`;
+
+            // Scroll to the result container
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            // Handle error
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+document.getElementById('clear-button').addEventListener('click', function() {
+    document.getElementById('diabetes-form').reset();
+    document.getElementById('result').innerText = ''; // Clear result when Clear button is clicked
+});
+
+    </script>
+</body>
+</html>
